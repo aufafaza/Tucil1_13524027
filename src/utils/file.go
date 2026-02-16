@@ -20,9 +20,12 @@ func ReadFile(path string) ([][]string, error) {
 
 	for scanner.Scan() {
 		line := scanner.Text()
+		line = strings.TrimSpace(line)
+		rowChars := strings.Split(line, "")
 
-		fields := strings.Fields(line)
-		data = append(data, fields)
+		if len(rowChars) > 0 {
+			data = append(data, rowChars)
+		}
 	}
 
 	if err := scanner.Err(); err != nil {
