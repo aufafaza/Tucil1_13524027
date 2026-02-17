@@ -2,6 +2,8 @@ package utils
 
 import (
 	"bufio"
+	"fmt"
+	"github.com/aufafaza/tucil1-stima.git/src/models"
 	"log"
 	"os"
 	"strings"
@@ -34,4 +36,28 @@ func ReadFile(path string) ([][]string, error) {
 
 	return data, nil
 
+}
+
+func WriteFile(filename string, board *models.Board) error {
+	file, err := os.Create(filename)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	size := board.Size
+	queens := board.Solutions[0]
+
+	for r := 0; r < size; r++ {
+		line := ""
+		for c := 0; c < size; c++ {
+			if queens[r] == c {
+				line += "# "
+			} else {
+				line += board.Grid[r][c] + " "
+			}
+		}
+		fmt.Fprintln(file, line)
+	}
+	return nil
 }
