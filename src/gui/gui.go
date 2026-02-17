@@ -165,6 +165,29 @@ func (g *Game) Update() error {
 func StartGame(grid [][]string, originalPath string) {
 	size := len(grid)
 
+	if size == 0 {
+		log.Fatal("board is empty")
+	}
+
+	for _, row := range grid {
+		if len(row) != size {
+			log.Fatalf("unsolvable, not an nxn board. Row: %v, Expected Row: %v", len(row), size)
+		}
+	}
+	colorMap := make(map[string]bool)
+	for _, row := range grid {
+		for _, cell := range row {
+			if cell != "" {
+				colorMap[cell] = true
+			}
+		}
+	}
+	if len(colorMap) < size {
+		log.Fatalf("unsolvable, only %v colors found, needed %v colors", len(colorMap), size, size)
+	}
+	if size > 1 && size < 4 {
+		log.Fatal("unsolvable, no solutions for size %v", size)
+	}
 	board := &models.Board{
 		Grid: grid,
 		Size: size,
@@ -181,7 +204,7 @@ func StartGame(grid [][]string, originalPath string) {
 	}
 
 	ebiten.SetWindowSize(screenWidth, screenHeight)
-	ebiten.SetWindowTitle("N-Queens Solver (Brute Force)")
+	ebiten.SetWindowTitle("N-Queens")
 
 	if err := ebiten.RunGame(game); err != nil {
 		log.Fatal(err)
