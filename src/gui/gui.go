@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+	"unicode"
 
 	"github.com/aufafaza/tucil1-stima.git/src/models"
 	"github.com/aufafaza/tucil1-stima.git/src/solver"
@@ -54,7 +55,6 @@ var palette = map[rune]color.RGBA{
 	'N': {128, 128, 0, 255},
 	'O': {0, 128, 128, 255},
 	'P': {192, 192, 192, 255},
-	'.': {230, 230, 230, 255}, // Added dot for empty cells
 }
 var DefaultColor = color.RGBA{200, 200, 200, 255}
 
@@ -68,7 +68,6 @@ func (g *Game) Draw(screen *ebiten.Image) {
 			x := float32(col) * g.TileSize
 			y := float32(row) * g.TileSize
 
-			// Ensure char is a rune for the palette lookup
 			char := rune(g.Board.Grid[row][col][0])
 
 			cellColor, poly := palette[char]
@@ -125,7 +124,6 @@ func (g *Game) Draw(screen *ebiten.Image) {
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
-	// This defines the coordinate system inside your Draw function
 	return screenWidth, screenHeight
 }
 
@@ -182,6 +180,16 @@ func StartGame(grid [][]string, originalPath string) {
 	for _, row := range grid {
 		if len(row) != size {
 			log.Fatalf("unsolvable, not an nxn board. Row: %v, Expected Row: %v", len(row), size)
+		}
+		for _, cell := range row {
+			if len(cell) == 0 {
+				continue
+			}
+			// if its not a letter, just return
+			char := rune(cell[0])
+			if !unicode.IsLetter(char) {
+				log.Fatalf("Error: Invalid character '%c' .", char)
+			}
 		}
 	}
 	colorMap := make(map[string]bool)
