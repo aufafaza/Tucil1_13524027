@@ -13,7 +13,7 @@ import (
 
 func main() {
 	var fileName string
-	fmt.Print("Enter the input file path (e.g., test/files/test1.txt): ")
+	fmt.Print("Enter the input file path (e.g., test/files/test_1.txt): ")
 	fmt.Scanln(&fileName)
 
 	grid, err := utils.ReadFile(fileName)
