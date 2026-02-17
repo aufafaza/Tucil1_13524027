@@ -5,13 +5,15 @@ type Board struct {
 	Grid      [][]string
 	Q         []int
 	Iter      int
-	Solutions int
+	Solutions [][]int
+	SolCount  int
 }
 
 func NewBoard(size int, gridData [][]string) *Board {
 	return &Board{
-		Size: size,
-		Grid: gridData,
-		Q:    make([]int, size), // jumlah Q = n (n x n grid)
+		Size:      size,
+		Grid:      gridData,
+		Q:         make([]int, size), // jumlah Q = n (n x n grid)
+		Solutions: make([][]int, 0),
 	}
 }

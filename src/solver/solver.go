@@ -1,11 +1,9 @@
 package solver
 
 import (
-	"log"
 	"math"
 
 	"github.com/aufafaza/tucil1-stima.git/src/models"
-	"time"
 )
 
 func ColorList(board [][]string) map[string]bool {
@@ -53,8 +51,48 @@ func IsSafe(grid [][]string, queens []int, row, col int) bool {
 	return true
 }
 
+func CheckValid(board *models.Board) bool {
+	n := board.Size
+	q := board.Q
+	grid := board.Grid
+
+	for i := 0; i < n; i++ {
+		for j := i + 1; j < n; j++ {
+			// if columns are the same -> false
+			if q[i] == q[j] {
+				return false
+			}
+
+			// if same color -> false
+			if grid[i][q[i]] == grid[j][q[j]] {
+				return false
+			}
+
+			//check adjacency
+			if math.Abs(float64(i-j)) == 1 && math.Abs(float64(q[i]-q[j])) <= 1 {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+func NextState(board *models.Board) bool {
+	n := board.Size
+	q := board.Q
+
+	for i := n - 1; i >= 0; i-- {
+		if q[i] < n-1 {
+			q[i]++ // check for each column in a row
+			return true
+		} else {
+			q[i] = 0
+		}
+	}
+	return false
+}
+
 func Solver(board *models.Board) bool {
-	start := time.Now()
 	row := 0
 
 	for i := range board.Q {
@@ -65,11 +103,14 @@ func Solver(board *models.Board) bool {
 
 		// check if sollution reach, i.e. reached end of row
 		if row == board.Size {
-			board.Solutions = 1
-			end := time.Since(start)
-			log.Printf("algorithm took %s to run\n", end)
-			return true
+			// copy solution to the struct
+			board.SolCount++
+			solCopy := make([]int, board.Size)
+			copy(solCopy, board.Q)
+			board.Solutions = append(board.Solutions, solCopy)
 
+			row--
+			continue
 		}
 
 		startCol := board.Q[row] + 1
@@ -96,8 +137,31 @@ func Solver(board *models.Board) bool {
 			row--
 		}
 	}
-	end := time.Since(start)
-	log.Printf("algorithm took %s to run\n", end)
 
 	return false
+}
+
+func Solver2(board *models.Board) bool {
+	for i := range board.Q {
+		board.Q[i] = 0
+	}
+
+	for {
+		board.Iter++
+		if CheckValid(board) {
+			board.SolCount++
+
+			solCopy := make([]int, board.Size)
+			copy(solCopy, board.Q)
+			board.Solutions = append(board.Solutions, solCopy)
+
+		}
+		// have checked all states of a NxN board (N^N)
+		if !NextState(board) {
+			break
+		}
+
+	}
+	return board.SolCount > 0
+
 }

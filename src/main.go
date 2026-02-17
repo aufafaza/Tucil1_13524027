@@ -6,6 +6,7 @@ import (
 	"github.com/aufafaza/tucil1-stima.git/src/solver"
 	"github.com/aufafaza/tucil1-stima.git/src/utils"
 	"log"
+	"time"
 )
 
 func main() {
@@ -24,24 +25,29 @@ func main() {
 		Q:    make([]int, N),
 		Iter: 0,
 	}
-	found := solver.Solver(board)
-
-	if found {
-		log.Printf("Solution found in %d interations\n", board.Iter)
-		printBoard(board)
+	start := time.Now()
+	solver.Solver2(board)
+	duration := time.Since(start)
+	fmt.Printf("solution found in %s\n", duration)
+	fmt.Printf("solution found in %d iterations\n", board.Iter)
+	fmt.Printf("number of solution: %d\n", board.SolCount)
+	if board.SolCount > 0 {
+		for i, sol := range board.Solutions {
+			fmt.Printf("solution %d\n", i+1)
+			printSolution(N, grid, sol)
+		}
 	} else {
 		log.Println("solution not found")
 	}
 }
 
-func printBoard(b *models.Board) {
-	for r := 0; r < b.Size; r++ {
-		for c := 0; c < b.Size; c++ {
-			if b.Q[r] == c {
-				fmt.Print("# ") // Queen
+func printSolution(size int, grid [][]string, queens []int) {
+	for r := 0; r < size; r++ {
+		for c := 0; c < size; c++ {
+			if queens[r] == c {
+				fmt.Print("Q ") // Print Queen
 			} else {
-				// Print the color (or '.' for empty to see clearly)
-				fmt.Printf("%s ", b.Grid[r][c])
+				fmt.Printf("%s ", grid[r][c])
 			}
 		}
 		fmt.Println()
